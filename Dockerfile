@@ -1,15 +1,19 @@
-FROM alpine:latest
+FROM python:3.11-slim
 
-# نصب پیش‌نیازها و وب‌سرور انجینکس
-RUN apk update && apk add nginx curl unzip
+WORKDIR /app
 
-# دانلود و نصب آخرین نسخه هسته Xray
-RUN curl -L -H "Cache-Control: no-cache" -o xray.zip https://github.com/XTLS/Xray-core/releases/latest/download/Xray-linux-64.zip && \
-    unzip xray.zip -d /usr/local/bin/ && \
-    chmod +x /usr/local/bin/xray && \
-    rm xray.zip
+# نصب گیت برای دریافت کدهای پنل
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
+# دانلود سورس پنل از گیت‌هاب اصلی
+RUN git clone https://github.com/arvin341az-glitch/RVG.git .
 
-CMD ["/start.sh"]
+# نصب پیش‌نیازهای پایتون
+RUN pip install --no-cache-dir -r requirements.txt
+
+# معرفی دامنه سایت شما به پنل و تنظیم پورت
+ENV RAILWAY_PUBLIC_DOMAIN=imann.apps.apply.build
+ENV PORT=8000
+
+# اجرای سرور پنل
+CMD ["python", "main.py"]
