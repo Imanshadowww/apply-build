@@ -1,9 +1,9 @@
 #!/bin/sh
 
-# این UUID همان پسورد شماست (می‌توانید بعداً عوضش کنید)
+# رمز عبور شما (UUID)
 UUID="d342d11e-d424-4583-b36e-524ab1f0afa4"
 
-# ۱. ساخت تنظیمات Xray (روی پورت مخفی 8081)
+# ساخت تنظیمات هسته Xray
 cat <<EOF > /config.json
 {
     "inbounds": [{
@@ -23,18 +23,16 @@ cat <<EOF > /config.json
 }
 EOF
 
-# ۲. ساخت تنظیمات Nginx (روی پورت اصلی 8000)
+# ساخت تنظیمات وب‌سرور Nginx برای دریافت تیک سلامت و عبور ترافیک
 cat <<EOF > /etc/nginx/http.d/default.conf
 server {
     listen 8000;
     
-    # پاسخ سریع به سیستم Health Check میزبان
     location / {
         add_header Content-Type text/plain;
         return 200 "Server is Healthy and Running!";
     }
     
-    # انتقال ترافیک VPN به Xray
     location /vless {
         if (\$http_upgrade != "websocket") {
             return 404;
@@ -55,4 +53,6 @@ echo "Starting Xray Core..."
 /usr/local/bin/xray -c /config.json &
 
 echo "Starting Nginx Web Server..."
+# این خط پوشه لازم برای اجرای بدون خطای Nginx در آلپاین را می‌سازد
+mkdir -p /run/nginx
 nginx -g 'daemon off;'
