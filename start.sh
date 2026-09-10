@@ -2,11 +2,11 @@
 
 UUID="d342d11e-d424-4583-b36e-524ab1f0afa4"
 
-# ساخت فایل HTML واقعی برای تیک سبز سلامت
+# ساخت فایل HTML برای تیک سبز سلامت
 mkdir -p /var/www/html
 echo "<html><body><h1>Server is Healthy and Running!</h1></body></html>" > /var/www/html/index.html
 
-# ساخت تنظیمات Xray
+# ساخت تنظیمات Xray بر پایه پروتکل قدرتمند gRPC
 cat <<EOF > /config.json
 {
     "inbounds": [{
@@ -18,18 +18,21 @@ cat <<EOF > /config.json
             "decryption": "none"
         },
         "streamSettings": {
-            "network": "ws",
-            "wsSettings": {"path": "/vless"}
+            "network": "grpc",
+            "grpcSettings": {
+                "serviceName": "vless"
+            }
         }
     }],
     "outbounds": [{"protocol": "freedom"}]
 }
 EOF
 
-# ساخت تنظیمات استاندارد Nginx بدون شروط اضافه
+# ساخت تنظیمات Nginx با پشتیبانی از HTTP/2 و gRPC
 cat <<EOF > /etc/nginx/http.d/default.conf
 server {
     listen 8000;
+    http2 on;
     root /var/www/html;
     index index.html;
     
@@ -38,14 +41,8 @@ server {
     }
     
     location /vless {
-        proxy_redirect off;
-        proxy_pass http://127.0.0.1:8081;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$host;
-        proxy_set_header X-Real-IP \$remote_addr;
-        proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
+        grpc_pass grpc://127.0.0.1:8081;
+        grpc_set_header X-Real-IP \$remote_addr;
     }
 }
 EOF
@@ -55,6 +52,5 @@ echo "Starting Xray Core..."
 
 echo "Starting Nginx Web Server..."
 mkdir -p /run/nginx
-# چک کردن اینکه تنظیمات Nginx مشکل تایپی نداشته باشد
 nginx -t
 nginx -g 'daemon off;'
