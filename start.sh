@@ -1,9 +1,12 @@
 #!/bin/sh
 
-# رمز عبور شما (UUID)
 UUID="d342d11e-d424-4583-b36e-524ab1f0afa4"
 
-# ساخت تنظیمات هسته Xray
+# ساخت فایل HTML واقعی برای تیک سبز سلامت
+mkdir -p /var/www/html
+echo "<html><body><h1>Server is Healthy and Running!</h1></body></html>" > /var/www/html/index.html
+
+# ساخت تنظیمات Xray
 cat <<EOF > /config.json
 {
     "inbounds": [{
@@ -23,14 +26,15 @@ cat <<EOF > /config.json
 }
 EOF
 
-# ساخت تنظیمات وب‌سرور Nginx (بدون شرط سخت‌گیرانه برای عبور راحت‌تر ترافیک)
+# ساخت تنظیمات استاندارد Nginx بدون شروط اضافه
 cat <<EOF > /etc/nginx/http.d/default.conf
 server {
     listen 8000;
+    root /var/www/html;
+    index index.html;
     
     location / {
-        add_header Content-Type "text/plain; charset=utf-8";
-        return 200 "Server is Healthy and Running!";
+        try_files \$uri \$uri/ =404;
     }
     
     location /vless {
@@ -50,6 +54,7 @@ echo "Starting Xray Core..."
 /usr/local/bin/xray -c /config.json &
 
 echo "Starting Nginx Web Server..."
-# ساخت پوشه موقت برای جلوگیری از کرش کردن Nginx
 mkdir -p /run/nginx
+# چک کردن اینکه تنظیمات Nginx مشکل تایپی نداشته باشد
+nginx -t
 nginx -g 'daemon off;'
