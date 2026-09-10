@@ -23,20 +23,17 @@ cat <<EOF > /config.json
 }
 EOF
 
-# ساخت تنظیمات وب‌سرور Nginx برای دریافت تیک سلامت و عبور ترافیک
+# ساخت تنظیمات وب‌سرور Nginx (بدون شرط سخت‌گیرانه برای عبور راحت‌تر ترافیک)
 cat <<EOF > /etc/nginx/http.d/default.conf
 server {
     listen 8000;
     
     location / {
-        add_header Content-Type text/plain;
+        add_header Content-Type "text/plain; charset=utf-8";
         return 200 "Server is Healthy and Running!";
     }
     
     location /vless {
-        if (\$http_upgrade != "websocket") {
-            return 404;
-        }
         proxy_redirect off;
         proxy_pass http://127.0.0.1:8081;
         proxy_http_version 1.1;
@@ -53,6 +50,6 @@ echo "Starting Xray Core..."
 /usr/local/bin/xray -c /config.json &
 
 echo "Starting Nginx Web Server..."
-# این خط پوشه لازم برای اجرای بدون خطای Nginx در آلپاین را می‌سازد
+# ساخت پوشه موقت برای جلوگیری از کرش کردن Nginx
 mkdir -p /run/nginx
 nginx -g 'daemon off;'
