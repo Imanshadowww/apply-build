@@ -1,0 +1,44 @@
+{
+  "log": {
+    "loglevel": "warning"
+  },
+  "inbounds": [
+    {
+      "port": 8000,
+      "protocol": "vless",
+      "settings": {
+        "clients": [
+          {
+            "id": "e1c977a8-6034-aab9-143e-113949230ef9"
+          }
+        ],
+        "decryption": "none"
+      },
+      "streamSettings": {
+        "network": "ws",
+        "wsSettings": {
+          "path": "/vless"
+        }
+      }
+    }
+  ],
+  "outbounds": [
+    {
+      "protocol": "wireguard",
+      "settings": {
+        "secretKey": "WO6Aaq6Yt/PLr+sW+OkATFjmfi7sgl4x+QaK85OL0V0=",
+        "address": [
+          "172.16.0.2/32",
+          "2606:4700:110:8f17:5ede:7c81:dfb0:17a2/128"
+        ],
+        "peers": [
+          {
+            "endpoint": "engage.cloudflareclient.com:2408",
+            "publicKey": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo="
+          }
+        ],
+        "reserved": [26, 38, 83]
+      }
+    }
+  ]
+}
