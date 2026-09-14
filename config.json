@@ -9,7 +9,7 @@
       "settings": {
         "clients": [
           {
-            "id": "e1c977a8-6034-aab9-143e-113949230ef9"
+            "id": "d342d11e-d424-4583-b36e-524ab1f0afa4"
           }
         ],
         "decryption": "none"
@@ -33,7 +33,7 @@
         ],
         "peers": [
           {
-            "endpoint": "engage.cloudflareclient.com:2408",
+            "endpoint": "162.159.192.1:2408",
             "publicKey": "bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo="
           }
         ],
