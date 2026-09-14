@@ -23,13 +23,13 @@ RUN echo 'server { \
         proxy_http_version 1.1; \
         proxy_set_header Upgrade $http_upgrade; \
         proxy_set_header Connection "upgrade"; \
-        proxy_set_header Host $host; \
+        proxy_set_header Host imann.apps.apply.build; \
         proxy_set_header X-Real-IP $remote_addr; \
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for; \
     } \
 }' > /etc/nginx/sites-available/default
 
-# تنظیم متغیرها (پایتون روی 8081 اجرا می‌شود و Nginx روی 8000)
+# تنظیم متغیرها (روی 8081 اجرا می‌شود و Nginx روی 8000)
 ENV RAILWAY_PUBLIC_DOMAIN=imann.apps.apply.build
 ENV PORT=8081
 
